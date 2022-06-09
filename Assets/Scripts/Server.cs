@@ -35,7 +35,22 @@ public class Server : MonoBehaviour
     void NetworkReceiveEvent(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
     {
         Packets packet = (Packets)reader.GetUShort();
-        
+        if (packet == Packets.Login)
+        {
+            string username = reader.GetString();
+            string password = reader.GetString();
+
+            RequestResponse resp = RequestResponse.OK;
+
+            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+                resp = RequestResponse.Error;
+
+            NetDataWriter writer = new NetDataWriter();
+            writer.Put((ushort)Packets.Login);
+            writer.Put((ushort)resp);
+
+            SendPacket(writer, peer, DeliveryMethod.ReliableOrdered);
+        }
     }
 
     void PeerConnectedEvent(NetPeer peer)
@@ -64,4 +79,11 @@ public class Server : MonoBehaviour
 public enum Packets
 {
     Welcome = 0,
+    Login = 1,
+}
+
+public enum RequestResponse
+{
+    OK = 0,
+    Error = 1,
 }
