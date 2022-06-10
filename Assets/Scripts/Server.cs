@@ -40,7 +40,10 @@ public class Server : MonoBehaviour
             string username = reader.GetString();
             string password = reader.GetString();
 
-            RequestResponse resp = RequestResponse.OK;
+            RequestResponse resp = Database.getInstance.Login(username, password);
+            Dictionary<string, string> settings = new Dictionary<string, string>();
+            if (resp == RequestResponse.OK)
+                settings = Database.getInstance.GetAccountSettings(username);
 
             if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
                 resp = RequestResponse.Error;
@@ -48,6 +51,13 @@ public class Server : MonoBehaviour
             NetDataWriter writer = new NetDataWriter();
             writer.Put((ushort)Packets.Login);
             writer.Put((ushort)resp);
+
+            writer.Put(settings.Count);
+            foreach (var s in settings)
+            {
+                writer.Put(s.Key);
+                writer.Put(s.Value);
+            }
 
             SendPacket(writer, peer, DeliveryMethod.ReliableOrdered);
         }
@@ -73,7 +83,6 @@ public class Server : MonoBehaviour
     {
         peer.Send(writer, method);
     }
-
 }
 
 public enum Packets
