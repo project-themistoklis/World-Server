@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using UnityEngine.Networking;
 
 public class Server : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class Server : MonoBehaviour
     [SerializeField] int port;
     [SerializeField] [Tooltip("Set to -1 to disable")] int maxClients = -1;
     [SerializeField] string connectionKey;
+    [SerializeField] string modelHolderUrl = "";
 
     EventBasedNetListener listener;
     NetManager server;
@@ -61,6 +63,26 @@ public class Server : MonoBehaviour
 
             SendPacket(writer, peer, DeliveryMethod.ReliableOrdered);
         }
+        else if (packet == Packets.Image)
+        {
+            string base64 = reader.GetString();
+
+            StartCoroutine(SendImageToServer(base64));
+        }
+    }
+
+    IEnumerator SendImageToServer(string base64)
+    {
+        Dictionary<string, string> formData = new Dictionary<string, string>();
+        formData.Add("image", base64);
+
+        using (UnityWebRequest www = UnityWebRequest.Post(modelHolderUrl + "/detect", formData))
+        {
+            yield return www.SendWebRequest();
+
+            if (www.isError)
+                Debug.Log(www.error);
+        }
     }
 
     void PeerConnectedEvent(NetPeer peer)
@@ -89,6 +111,7 @@ public enum Packets
 {
     Welcome = 0,
     Login = 1,
+    Image = 2,
 }
 
 public enum RequestResponse
