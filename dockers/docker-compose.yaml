@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+  db:
+    restart: always
+    image: postgres
+    hostname: project_themis_db
+    environment:
+      POSTGRES_DB: themis
+      POSTGRES_USER: themis
+      POSTGRES_PASSWORD: themis_default_pwd
+    ports:
+      - '5432:5432'
