@@ -12,7 +12,7 @@ class database:
     
     def initDB(self):
         #Delete old tables
-        query = "SELECT table_schema,table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name"
+        query = "DROP TABLE accounts"
         self.cur.execute(query)
         self.conn.commit()
 
