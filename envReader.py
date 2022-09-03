@@ -1,7 +1,7 @@
 data = []
 
 def read():
-    path = '.env'
+    path = '.env.local'
     file = open(path, 'r')
     
     lines = file.readlines()
