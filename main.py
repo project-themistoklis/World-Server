@@ -52,13 +52,13 @@ def ping():
 
 @app.route('/login', methods=['POST'])
 def login():
-    data = request.data
+    data = loads(request.data)
     resp = db.login(data['username'], data['password'])
     return resp
 
 @app.route('/loginWithPin', methods=['POST'])
 def loginWithPin():
-    data = request.data
+    data = loads(request.data)
     resp = db.loginWithPin(data['username'], data['pin'])
     return resp
 
