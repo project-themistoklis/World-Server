@@ -1,10 +1,12 @@
+import os
+
 data = []
 
 def read():
-    path = '.env.local'
+    path = os.getcwd() + '/pyserver/.env.local'
     file = open(path, 'r')
-    
     lines = file.readlines()
+    
     for line in lines:
         d = line.strip().split('=', 1)
         if len(d) == 2:

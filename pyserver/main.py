@@ -7,9 +7,11 @@ from flask import Flask, request
 import eventlet
 from flask_cors import CORS
 from json import loads
+from tcpServer import tcpServer
 
 read()
 
+srv = tcpServer(getValue('TCP_SERVER_HOST'), getNumber('TCP_SERVER_PORT'))
 db = database()
 server = socketio.Server(cors_allowed_origins='*')
 app = Flask(__name__)
