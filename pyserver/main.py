@@ -8,6 +8,7 @@ import eventlet
 from flask_cors import CORS
 from json import loads
 from tcpServer import tcpServer
+from fire_detector import fire_detector
 
 read()
 
@@ -28,6 +29,10 @@ def connect(sid, environ, auth):
 @server.event
 def disconnect(sid):
     print('disconnect ', sid)
+
+@server.on('image_data')
+def on_image_data(sid, data):
+    pass
 
 @server.on('data')
 def data_event(sid, data):
@@ -70,6 +75,7 @@ def user_has_pin():
     resp = db.userHasPin(data['username'])
     return resp
 
+fd = fire_detector(sendFunc=send)
 app = socketio.Middleware(server, app)
 wst = threading.Thread(target=serve_app, args=(server,app))
 wst.daemon = True

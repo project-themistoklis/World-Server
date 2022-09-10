@@ -5,3 +5,5 @@ cv2
 numpy
 easyocr
 PIL
+geopy
+Events
