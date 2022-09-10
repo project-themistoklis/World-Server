@@ -16,7 +16,7 @@ class database:
         self.cur.execute(query)
         self.conn.commit()
 
-        query = 'CREATE TABLE accounts(username TEXT NOT NULL, email TEXT NOT NULL, password TEXT NOT NULL, pin TEXT)'
+        query = 'CREATE TABLE accounts(username TEXT NOT NULL, email TEXT NOT NULL, password TEXT NOT NULL, uuid TEXT, pin TEXT)'
         self.cur.execute(query)
         self.conn.commit()
     
@@ -39,14 +39,14 @@ class database:
         self.cur.execute(query, (username,))
         rows = self.cur.fetchall()
 
-        return rows and len(rows) > 0
+        return len(rows) > 0
 
     def emailExists(self, email):
         query = "SELECT * FROM accounts WHERE email = %s"
         self.cur.execute(query, (email,))
         rows = self.cur.fetchall()
 
-        return rows and len(rows) > 0
+        return len(rows) > 0
 
     def login(self, username, password):
         if not username or len(username) <= 0 or not password or len(password) <= 0:
@@ -56,7 +56,7 @@ class database:
         self.cur.execute(query, (username, password))
         rows = self.cur.fetchall()
 
-        if rows and len(rows) > 0:
+        if len(rows) > 0:
             return "ok"
         else:
             return "Invalid credentials!"
@@ -66,17 +66,24 @@ class database:
         self.cur.execute(query, (username, pin))
         rows = self.cur.fetchall()
 
-        if rows and len(rows) > 0:
+        if len(rows) > 0:
             return "ok"
         else:
             return "Invalid credentials!"
 
+    def useHasPin_uuid(self, uuid):
+        query = "SELECT * FROM accounts WHERE uuid = %s AND pin IS NOT NULL"
+        self.cur.execute(query, (uuid,))
+        rows = self.cur.fetchall()
+
+        return  len(rows) > 0
+        
     def userHasPin(self, username):
         query = "SELECT * FROM accounts WHERE username = %s AND pin IS NOT NULL"
         self.cur.execute(query, (username,))
         rows = self.cur.fetchall()
 
-        return rows and len(rows) > 0
+        return len(rows) > 0
 
     def setUserPin(self, username, pin):
         query = "UPDATE accounts SET pin = %s WHERE username = %s"

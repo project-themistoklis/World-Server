@@ -60,20 +60,22 @@ def ping():
 @app.route('/login', methods=['POST'])
 def login():
     data = loads(request.data)
+    print('login:', data)
     resp = db.login(data['username'], data['password'])
-    return resp
+    return { "success": resp == 'ok', 'info': resp, "settings": {} }
 
 @app.route('/loginWithPin', methods=['POST'])
 def loginWithPin():
     data = loads(request.data)
     resp = db.loginWithPin(data['username'], data['pin'])
-    return resp
+    return { "success": resp == 'ok', 'info': resp, "settings": {} }
 
 @app.route('/user_has_pin', methods=['GET'])
 def user_has_pin():
-    data = request.data
-    resp = db.userHasPin(data['username'])
-    return resp
+    uuid = request.args.get('uuid')
+    print('uuid:', uuid)
+    resp = db.useHasPin_uuid(uuid)
+    return { 'success': resp}
 
 fd = fire_detector(sendFunc=send)
 app = socketio.Middleware(server, app)
