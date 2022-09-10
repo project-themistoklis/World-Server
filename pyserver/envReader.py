@@ -3,7 +3,7 @@ import os
 data = []
 
 def read():
-    path = os.getcwd() + '/pyserver/.env.local'
+    path = os.getcwd() + '/pyserver/.env'
     file = open(path, 'r')
     lines = file.readlines()
     

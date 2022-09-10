@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(0, './pyserver/utils')
 from locator import get_location
 from events import Events
 
