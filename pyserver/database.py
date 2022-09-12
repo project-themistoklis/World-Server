@@ -19,6 +19,8 @@ class database:
         query = 'CREATE TABLE accounts(username TEXT NOT NULL, email TEXT NOT NULL, password TEXT NOT NULL, uuid TEXT, pin TEXT)'
         self.cur.execute(query)
         self.conn.commit()
+
+        self.addAccount("admin", "admin@localhost", "admin")
     
     def addAccount(self, username, email, password):
         if not username or len(username) <= 0 or not email or len(email) <= 0 or not password or len(password) <= 0:
