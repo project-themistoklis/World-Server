@@ -64,7 +64,6 @@ def login():
     settings = '{}'
     if (resp == 'ok'):
         settings = db.getSettings(data['username'])
-    print('settings:', settings)
     return { "success": resp == 'ok', 'info': resp, "settings": settings }
 
 @app.route('/loginWithPin', methods=['POST'])

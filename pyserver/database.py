@@ -21,8 +21,7 @@ class database:
         self.cur.execute(query)
         self.conn.commit()
 
-        res = self.addAccount('admin', 'test@test.com', 'admin')
-        print('res:', res)
+        self.addAccount('admin', 'test@test.com', 'admin')\
     
     def addAccount(self, username, email, password):
         if not username or len(username) <= 0 or not email or len(email) <= 0 or not password or len(password) <= 0:
@@ -116,7 +115,6 @@ class database:
         self.conn.commit()
         
     def setSettings(self, username, settings):
-        print('set settings:', settings, 'username:', username)
         query = "UPDATE accounts SET settings = %s WHERE username = %s"
         self.cur.execute(query, (settings, username))
         self.conn.commit()
