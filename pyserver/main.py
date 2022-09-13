@@ -60,22 +60,33 @@ def ping():
 @app.route('/login', methods=['POST'])
 def login():
     data = loads(request.data)
-    print('login:', data)
     resp = db.login(data['username'], data['password'])
-    return { "success": resp == 'ok', 'info': resp, "settings": {} }
+    settings = '{}'
+    if (resp == 'ok'):
+        settings = db.getSettings(data['username'])
+    print('settings:', settings)
+    return { "success": resp == 'ok', 'info': resp, "settings": settings }
 
 @app.route('/loginWithPin', methods=['POST'])
 def loginWithPin():
     data = loads(request.data)
     resp = db.loginWithPin(data['uuid'], data['pin'])
-    return { "success": resp != 'Invalid credentials!', 'info': resp, "settings": {} }
+    settings = '{}'
+    if (resp == 'ok'):
+        settings = db.getSettingsFromUUID(data['uuid'])
+    return { "success": resp != 'Invalid credentials!', 'info': resp, "settings": settings }
 
 @app.route('/user_has_pin', methods=['GET'])
 def user_has_pin():
     uuid = request.args.get('uuid')
-    print('uuid:', uuid)
     resp = db.useHasPin_uuid(uuid)
     return { 'success': resp}
+
+@app.route('/set_settings', methods=['POST'])
+def setSettings():
+    data = loads(request.data)
+    db.setSettings(data['username'], data['settings'])
+    return { 'success': 'ok' }
 
 fd = fire_detector(sendFunc=send)
 app = socketio.Middleware(server, app)
