@@ -12,13 +12,16 @@ class database:
     
     def initDB(self):
         #Delete old tables
-        query = "DROP TABLE accounts"
+        query = "DROP TABLE IF EXISTS accounts"
         self.cur.execute(query)
         self.conn.commit()
 
         query = 'CREATE TABLE accounts(username TEXT NOT NULL, email TEXT NOT NULL, password TEXT NOT NULL, uuid TEXT, pin TEXT)'
         self.cur.execute(query)
         self.conn.commit()
+
+        res = self.addAccount('admin', 'test@test.com', 'admin')
+        print('res:', res)
     
     def addAccount(self, username, email, password):
         if not username or len(username) <= 0 or not email or len(email) <= 0 or not password or len(password) <= 0:
@@ -33,7 +36,8 @@ class database:
         query = "INSERT INTO accounts (username, email, password, pin) VALUES (%s, %s, %s, %s)"
         self.cur.execute(query, (username, email, password, None))
         self.conn.commit()
-    
+        return 'ok'
+        
     def usernameExists(self, username):
         query = "SELECT * FROM accounts WHERE username = %s"
         self.cur.execute(query, (username,))
@@ -55,6 +59,7 @@ class database:
         query = "SELECT * FROM accounts WHERE username = %s AND password = %s"
         self.cur.execute(query, (username, password))
         rows = self.cur.fetchall()
+        print(rows)
 
         if len(rows) > 0:
             return "ok"
@@ -67,7 +72,7 @@ class database:
         rows = self.cur.fetchall()
 
         if len(rows) > 0:
-            return "ok"
+            return rows[0]['username']
         else:
             return "Invalid credentials!"
 

@@ -67,8 +67,8 @@ def login():
 @app.route('/loginWithPin', methods=['POST'])
 def loginWithPin():
     data = loads(request.data)
-    resp = db.loginWithPin(data['username'], data['pin'])
-    return { "success": resp == 'ok', 'info': resp, "settings": {} }
+    resp = db.loginWithPin(data['uuid'], data['pin'])
+    return { "success": resp != 'Invalid credentials!', 'info': resp, "settings": {} }
 
 @app.route('/user_has_pin', methods=['GET'])
 def user_has_pin():

@@ -1,9 +1,13 @@
 psycopg2
 panda3d
 flask
-cv2
+flask-cors
+opencv-python
 numpy
 easyocr
 PIL
 geopy
 Events
+socketio
+python-socketio
+eventlet
