@@ -6,17 +6,18 @@ class database:
     def __init__(self):
         self.conn = psycopg2.connect(database=getValue('DB_NAME'), user=getValue('DB_USER'), password=getValue('DB_PASSWORD'), host=getValue('DB_HOST'))
         self.cur = self.conn.cursor()
+        self.conn.autocommit = True
 
         if getBoolean('INIT_DB') == True:
             self.initDB()
     
     def initDB(self):
         #Delete old tables
-        query = "DROP TABLE accounts"
+        query = "DROP TABLE IF EXISTS accounts"
         self.cur.execute(query)
         self.conn.commit()
 
-        query = 'CREATE TABLE accounts(username TEXT NOT NULL, email TEXT NOT NULL, password TEXT NOT NULL, uuid TEXT, pin TEXT)'
+        query = 'CREATE TABLE accounts(username TEXT NOT NULL, email TEXT NOT NULL, password TEXT NOT NULL, uuid TEXT, pin TEXT, settings TEXT)'
         self.cur.execute(query)
         self.conn.commit()
 
@@ -32,10 +33,11 @@ class database:
         if self.emailExists(email) == True:
             return "Email already exists!"
 
-        query = "INSERT INTO accounts (username, email, password, pin) VALUES (%s, %s, %s, %s)"
-        self.cur.execute(query, (username, email, password, None))
+        query = "INSERT INTO accounts (username, email, password, pin, settings) VALUES (%s, %s, %s, %s, %s)"
+        self.cur.execute(query, (username, email, password, None, '{}'))
         self.conn.commit()
-    
+        return 'ok'
+        
     def usernameExists(self, username):
         query = "SELECT * FROM accounts WHERE username = %s"
         self.cur.execute(query, (username,))
@@ -63,13 +65,33 @@ class database:
         else:
             return "Invalid credentials!"
 
+    def getSettings(self, username):
+        query = "SELECT * FROM accounts WHERE username = %s"
+        self.cur.execute(query, (username, ))
+        rows = self.cur.fetchall();
+        
+        if (len(rows)) > 0:
+            return rows[0][5]
+        else:
+            return '{}'
+
+    def getSettingsFromUUID(self, uuid):
+        query = "SELECT * FROM accounts WHERE uuid = %s"
+        self.cur.execute(query, (uuid, ))
+        rows = self.cur.fetchall();
+        
+        if (len(rows)) > 0:
+            return rows[0][5]
+        else:
+            return '{}'
+                
     def loginWithPin(self, username, pin):
         query = "SELECT * FROM accounts WHERE username = %s AND pin = %s"
         self.cur.execute(query, (username, pin))
         rows = self.cur.fetchall()
 
         if len(rows) > 0:
-            return "ok"
+            return rows[0][0]
         else:
             return "Invalid credentials!"
 
@@ -90,4 +112,9 @@ class database:
     def setUserPin(self, username, pin):
         query = "UPDATE accounts SET pin = %s WHERE username = %s"
         self.cur.execute(query, (pin, username))
+        self.conn.commit()
+        
+    def setSettings(self, username, settings):
+        query = "UPDATE accounts SET settings = %s WHERE username = %s"
+        self.cur.execute(query, (settings, username))
         self.conn.commit()

@@ -122,6 +122,9 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+node_modules/
+pyserver/__pycache__/
+pyserver/.env
 .env
 .venv
 env/
